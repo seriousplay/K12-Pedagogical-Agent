@@ -1,15 +1,18 @@
-# Web Agent
+# K12 教研智能体
 
-一个基于 CodeBuddy Agent SDK 构建的 Web Agent 应用模板。
+基于 CodeBuddy Agent SDK 构建的 K12 教育教研智能体 Web 应用。
 
 ## 特性
 
+- 📚 **备课工作流** - "备这节课"触发五步自动化：信息确认→知识库检索→教案生成→质量自审→输出成品
+- 📝 **分层出题** - 基础(50%)/发展(30%)/挑战(20%)三层题目自动生成，支持错题驱动和薄弱点加权
+- ✅ **教案审核** - 六维度系统审核（目标/内容/方法/过程/评价/差异化），输出评级和改进建议
+- 📖 **知识库检索** - 接入 ima 校本知识库，自动检索并标注来源，无内容时诚实告知
 - 💬 **流式对话** - 实时显示 AI 回复
 - 🔧 **工具调用** - 可视化展示 Agent 工具使用
 - 🔒 **权限控制** - 支持多种权限模式
 - 📝 **会话管理** - 多会话切换和持久化
 - 🎨 **主题切换** - 支持深色/浅色主题
-- 🤖 **自定义 Agent** - 创建和管理多个 Agent 配置
 
 ## 技术栈
 
@@ -27,7 +30,30 @@
 npm install
 ```
 
-### 2. 启动开发服务器
+### 2. 配置认证
+
+方式一：使用 CodeBuddy API Key
+
+创建 `.env` 文件：
+```bash
+CODEBUDDY_API_KEY=your_api_key
+```
+
+方式二：使用 CodeBuddy CLI 登录
+
+```bash
+# 登录 CodeBuddy
+codebuddy login
+
+# 启动应用（会自动使用 CLI 的登录信息）
+npm run dev
+```
+
+方式三：Web UI 配置
+
+在应用的设置页面中配置环境变量（仅在当前服务器进程有效）。
+
+### 3. 启动开发服务器
 
 ```bash
 npm run dev
@@ -35,31 +61,78 @@ npm run dev
 
 这会同时启动前端（端口 5173）和后端（端口 3000）
 
-### 3. 访问应用
+### 4. 访问应用
 
 打开浏览器访问 http://localhost:5173
+
+## 使用指南
+
+### 备课工作流
+
+在输入框中输入：
+```
+备这节课 — 分数的初步认识
+```
+
+智能体将自动执行：
+1. 确认学科年级和课时
+2. 检索知识库中的相关资源
+3. 生成完整教案
+4. 进行六维度质量审核
+5. 输出成品教案
+
+### 分层出题
+
+在输入框中输入：
+```
+帮我出题 — 数学 五年级 分数加减法
+```
+
+智能体将生成三层题目：
+- 基础层（50%）：巩固核心概念
+- 发展层（30%）：应用和迁移
+- 挑战层（20%）：拓展和创新
+
+### 教案审核
+
+粘贴教案内容，然后输入：
+```
+帮我审核这个教案
+```
+
+智能体将从六个维度进行系统审核并给出改进建议。
+
+### 知识库检索
+
+直接提问教学相关问题，智能体将：
+- 自动检索知识库中的相关资源
+- 在回答中标注资料来源
+- 如无相关内容，明确说明"资料库中暂无"
 
 ## 项目结构
 
 ```
-web-agent/
+teaching-research-web/
 ├── server/                    # 后端服务
 │   ├── index.ts              # Express 服务器
 │   └── db.ts                 # 数据库操作
 ├── src/                      # 前端源码
 │   ├── components/           # React 组件
+│   │   ├── ChatInput.tsx     # 聊天输入框
+│   │   ├── ChatMessages.tsx  # 聊天消息展示
+│   │   ├── NewChatView.tsx   # 新建聊天视图（含快捷功能入口）
+│   │   └── ...
 │   ├── hooks/                # 自定义 Hooks
 │   ├── pages/                # 页面组件
 │   ├── types.ts              # 类型定义
-│   ├── config.ts             # 应用配置
+│   ├── config.ts             # 应用配置（含教研智能体系统提示词）
 │   └── App.tsx               # 应用入口
 ├── data/                     # 数据存储
 │   └── chat.db               # SQLite 数据库
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
-├── README.md                 # 项目说明
-└── DEVELOPMENT.md            # 二次开发指南
+└── README.md                 # 项目说明
 ```
 
 ## 核心功能
@@ -112,34 +185,7 @@ web-agent/
 
 - Node.js 18+
 - npm 或 yarn
-
-## 配置
-
-### 方式一：环境变量配置
-
-创建 `.env` 文件：
-
-```bash
-PORT=3000
-CODEBUDDY_API_KEY=your_api_key
-CODEBUDDY_AUTH_TOKEN=your_auth_token
-CODEBUDDY_BASE_URL=https://api.example.com
-CODEBUDDY_INTERNET_ENVIRONMENT=external
-```
-
-### 方式二：使用 CodeBuddy CLI 登录
-
-```bash
-# 登录 CodeBuddy
-codebuddy login
-
-# 启动应用（会自动使用 CLI 的登录信息）
-npm run dev
-```
-
-### 方式三：Web UI 配置
-
-在应用的设置页面中配置环境变量（仅在当前服务器进程有效）。
+- CodeBuddy API Key 或 CLI 登录
 
 ## 开发
 
@@ -160,16 +206,6 @@ npm run build
 npm start
 ```
 
-## 二次开发
-
-如果你想基于这个模板进行定制化开发，请查看 [DEVELOPMENT.md](./DEVELOPMENT.md) 获取详细指南，包括：
-
-- 项目架构详解
-- 核心功能实现原理
-- 10+ 常见定制场景示例
-- API 完整参考
-- 调试和部署指南
-
-## License
+##  License
 
 MIT
